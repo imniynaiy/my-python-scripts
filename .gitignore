@@ -3,4 +3,5 @@ bin
 include
 lib
 png_tilter
-temp
+temp/*
+!temp/.gitkeep
