@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folder Links</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <h2>Folders</h2>
+            <ul id="folder-list">
+                {% for folder in folders %}
+                    <li><a href="{{ url_for('folder', folder_id=folder.id) }}">{{ folder.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="content">
+            <h2>Links in {{ selected_folder.title }}</h2>
+            <table id="links-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>URL</th>
+                        <th>Is Archived</th>
+                        <th>Is Personal</th>
+                    </tr>
+                </thead>
+                <tbody id="links-table-body">
+                    {% for link in links %}
+                        <tr data-link-id="{{ link.id }}">
+                            <td>{{ link.title }}</td>
+                            <td>{{ link.href }}</td>
+                            <td><input type="checkbox" class="toggle-archived" {% if link.is_archived %}checked{% endif %}></td>
+                            <td><input type="checkbox" class="toggle-personal" {% if link.is_personal %}checked{% endif %}></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
