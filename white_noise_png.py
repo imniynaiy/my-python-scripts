@@ -16,12 +16,11 @@ def generate_white_noise_png(width, height, box_size):
     # Generate white noise image using HLS color systsem
     image = Image.new("RGB", (width, height))
     pixels = image.load()
-
     for x in range(0, width, box_size):
         for y in range(0, height, box_size):
-            h = random.randint(0, 360)  # Hue: 0-360
-            l = random.randint(0, 100)  # Lightness: 0-100
-            s = random.randint(0, 100)  # Saturation: 0-100
+            h = random.uniform(0, 360)  # Hue: 0-360
+            l = random.uniform(0, 100)  # Lightness: 0-100
+            s = random.uniform(0, 100)  # Saturation: 0-100
 
             # Convert HLS to RGB
             r, g, b = [int(c * 255) for c in colorsys.hls_to_rgb(h / 360, l / 100, s / 100)]
