@@ -7,3 +7,5 @@ temp/*
 !temp/.gitkeep
 .DS_Store
 bookmark/instance
+*/key.txt
+white_noise_png/*
