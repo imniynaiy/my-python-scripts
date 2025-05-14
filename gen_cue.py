@@ -29,7 +29,7 @@ def generate_cue(input_file, album_title="", artist_name="", genre="", year="", 
             for line in infile:
                 match = re.match(pattern, line.strip())
                 if match:
-                    time = match.group(1)
+                    time = match.group(1) # Group is splitted by "()"
                     title = match.group(2)
                     
                     # Write track information to the .cue file
