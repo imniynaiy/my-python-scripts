@@ -6,7 +6,7 @@ import colorsys
 
 def generate_white_noise_png(width, height, box_size):
     # Create output directory if it doesn't exist
-    output_dir = "./white_noise_png"
+    output_dir = "./temp/white_noise_png"
     os.makedirs(output_dir, exist_ok=True)
 
     # Adjust width and height to be multiples of box_size
