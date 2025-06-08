@@ -53,6 +53,6 @@ def process_image(input_path, output_path, variance=10, crop=10):
 # Example usage
 variance = 10
 crop = 20
-input_path = './png_tilter/input.jpg'
-output_path = './png_tilter/output2.jpg'
+input_path = './temp/png_tilter/input.jpg'
+output_path = './temp/png_tilter/output2.jpg'
 process_image(input_path, output_path, variance, crop)
