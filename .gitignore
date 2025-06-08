@@ -1,8 +1,4 @@
 .venv
-bin
-include
-lib
-png_tilter
 temp/*
 !temp/.gitkeep
 .DS_Store
