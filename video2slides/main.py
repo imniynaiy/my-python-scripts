@@ -1,11 +1,7 @@
 import cv2
 import os
 import numpy as np
-
-VIDEO_PATH = 'temp/【耶鲁大学】【自动字幕】情绪管理/[P01]1-1. 马克·布雷克特博士的课程引入.mp4'  # Path to your lecture video
-OUTPUT_DIR = '../temp/slides/p1'       # Directory to save extracted slides
-INTERVAL_SEC = 2            # Check every X seconds
-DIFF_THRESHOLD = 0.2        # Y% difference (e.g., 0.2 = 20%)
+import argparse
 
 def frame_difference(f1, f2):
     # Compute normalized difference between two frames
@@ -14,13 +10,30 @@ def frame_difference(f1, f2):
     total_pixels = diff.size
     return non_zero_count / total_pixels
 
-def main():
-    if not os.path.exists(OUTPUT_DIR):
-        os.makedirs(OUTPUT_DIR)
+def get_default_output_dir(video_path):
+    base = os.path.splitext(os.path.basename(video_path))[0]
+    return os.path.join(os.getcwd(), f"{base}_slides")
 
-    cap = cv2.VideoCapture(VIDEO_PATH)
+def main():
+    parser = argparse.ArgumentParser(description="Extract slides from a lecture video.")
+    parser.add_argument("video_path", help="Path to your lecture video")
+    parser.add_argument("--output_dir", help="Directory to save extracted slides (default: <video>_slides under current folder)")
+    parser.add_argument("--interval_sec", type=float, default=2, help="Check every X seconds (default: 2)")
+    parser.add_argument("--diff_threshold", type=float, default=0.2, help="Y%% difference threshold (default: 0.2)")
+
+    args = parser.parse_args()
+
+    video_path = args.video_path
+    output_dir = args.output_dir or get_default_output_dir(video_path)
+    interval_sec = args.interval_sec
+    diff_threshold = args.diff_threshold
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
-    interval_frames = int(fps * INTERVAL_SEC)
+    interval_frames = int(fps * interval_sec)
     frame_count = 0
     slide_idx = 1
     last_frame = None
@@ -33,20 +46,20 @@ def main():
         if frame_count % interval_frames == 0:
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             if last_frame is None:
-                cv2.imwrite(f"{OUTPUT_DIR}/{slide_idx:03d}.png", frame)
+                cv2.imwrite(f"{output_dir}/{slide_idx:03d}.png", frame)
                 last_frame = gray
                 slide_idx += 1
             else:
                 diff = frame_difference(last_frame, gray)
-                if diff > DIFF_THRESHOLD:
-                    cv2.imwrite(f"{OUTPUT_DIR}/{slide_idx:03d}.png", frame)
+                if diff > diff_threshold:
+                    cv2.imwrite(f"{output_dir}/{slide_idx:03d}.png", frame)
                     last_frame = gray
                     slide_idx += 1
 
         frame_count += 1
 
     cap.release()
-    print(f"Extraction complete. {slide_idx-1} slides saved to '{OUTPUT_DIR}'.")
+    print(f"Extraction complete. {slide_idx-1} slides saved to '{output_dir}'.")
 
 if __name__ == "__main__":
     main()
