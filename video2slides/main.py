@@ -52,7 +52,7 @@ def main():
             else:
                 diff = frame_difference(last_frame, gray)
                 if diff > diff_threshold:
-                    cv2.imwrite(f"{output_dir}/{slide_idx:03d}.png", frame)
+                    cv2.imwrite(f"{output_dir}/{slide_idx:03d}-{int(diff*1000):03d}.png", frame)
                     last_frame = gray
                     slide_idx += 1
 
