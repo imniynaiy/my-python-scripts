@@ -1,5 +1,5 @@
 # Active venv
 
 ```shell
-source .venv/bin/activate
+source init_venv.sh
 ```
