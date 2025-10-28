@@ -5,3 +5,4 @@ temp/*
 bookmark/instance
 */key.txt
 white_noise_png/*
+.env
