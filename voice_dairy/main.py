@@ -109,8 +109,8 @@ def main():
     print(f"Created diary entry: {output_file}")
 
     # Cleanup
-    os.remove('temp.wav')
-    os.remove('temp.txt')
+    # os.remove('temp.wav')
+    # os.remove('temp.txt')
 
 if __name__ == "__main__":
     main()
