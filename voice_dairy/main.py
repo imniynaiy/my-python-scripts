@@ -5,7 +5,8 @@ import subprocess
 from datetime import datetime
 from openai import OpenAI
 
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+#client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'),base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",)
 from pathlib import Path
 import sys
 
@@ -59,7 +60,7 @@ def process_with_chatgpt(transcript):
     """Process transcript with ChatGPT"""
     prompt = """你将扮演一位秘书。这是一段语音转写文字，将它改为日记。summarize it into bullet points in md, with four categories as header: developer, thoughts, mood, entertainment and todo. 尽可能用我的原话，但是要去掉嗯啊语气词和重复。"""
 
-    response = client.chat.completions.create(model="gpt-4",
+    response = client.chat.completions.create(model="qwen-plus", # insteadof gpt-5
     messages=[
         {"role": "system", "content": prompt},
         {"role": "user", "content": transcript}
@@ -90,7 +91,7 @@ def main():
 
     # Merge audio files
     if not merge_audio_files(directory):
-        sys.exit(1)
+       sys.exit(1)
 
     # Transcribe audio
     transcribe_audio(directory=directory)
