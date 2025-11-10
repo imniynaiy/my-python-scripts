@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
+
+from utils import get_audio_file_abs_uri
 import os
 import subprocess
 from datetime import datetime
@@ -16,8 +18,7 @@ from pathlib import Path
 def create_markdown(audio_file, date_str):
     # 将 ABSOLUTE_PATH/welcome.mp3 替换为本地音频的绝对路径，
     # 本地文件的完整路径必须以 file:// 为前缀，以保证路径的合法性，例如：file:///home/images/test.mp3
-    abs_path = Path(audio_file).expanduser().resolve()
-    audio_file_path = abs_path.as_uri()
+    audio_file_path = get_audio_file_abs_uri(audio_file)
     prompt = """你将扮演一位秘书。这是一段语音转写文字，将它改为日记。summarize it into bullet points in md, with four categories as header: developer, thoughts, mood, entertainment and todo. 尽可能用我的原话，但是要去掉嗯啊语气词和重复。"""
 
     messages = [
