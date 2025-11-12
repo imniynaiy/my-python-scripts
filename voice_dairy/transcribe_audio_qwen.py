@@ -46,10 +46,11 @@ def transcribe_audio(input_file, output_file="temp"):
         result = response.output.choices[0].message.content[0]['text']
         print(result)
         
-        # Write to output file if specified
+        # Append to output file if specified (do not clear existing content)
         if output_file:
-            with open(output_file, 'w', encoding='utf-8') as f:
+            with open(output_file, 'a', encoding='utf-8') as f:
                 f.write(result)
+                f.write('\n')
                 
         return True
     else:
