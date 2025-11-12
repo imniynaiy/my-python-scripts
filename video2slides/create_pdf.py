@@ -1,5 +1,6 @@
 # create a pdf from a folder of jpgs. the content is organized by the subfolder name.
 import os
+import sys
 from PIL import Image
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -34,7 +35,10 @@ def create_pdf_from_jpgs(root_folder, output_pdf):
     )
 
 if __name__ == "__main__":
-    # Change these paths as needed
-    folder_with_jpgs = "temp/slides"  # Replace with your folder path
-    output_pdf_path = "temp/slides/output.pdf"
+    if len(sys.argv) != 3:
+        print("Usage: python create_pdf.py <folder_with_jpgs> <output_pdf_path>")
+        sys.exit(1)
+
+    folder_with_jpgs = sys.argv[1]
+    output_pdf_path = sys.argv[2]
     create_pdf_from_jpgs(folder_with_jpgs, output_pdf_path)
