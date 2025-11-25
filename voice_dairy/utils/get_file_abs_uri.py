@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def get_audio_file_abs_uri(audio_file):
+def get_file_abs_uri(audio_file):
         """Convert local audio file path to URI format.
         
         Args:
