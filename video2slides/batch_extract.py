@@ -1,9 +1,15 @@
 import os
 import glob
 import subprocess
+import argparse
 
-input_folder = "temp/【耶鲁大学】【自动字幕】情绪管理"
-output_base = "temp/slides"
+parser = argparse.ArgumentParser(description="Batch extract slides from mp4 files")
+parser.add_argument("input_folder", help="Path to folder containing .mp4 files")
+parser.add_argument("--output-base", default="temp/slides", help="Base output directory (default: temp/slides)")
+args = parser.parse_args()
+
+input_folder = os.path.abspath(os.path.expanduser(args.input_folder))
+output_base = os.path.abspath(os.path.expanduser(args.output_base))
 
 os.makedirs(output_base, exist_ok=True)
 
