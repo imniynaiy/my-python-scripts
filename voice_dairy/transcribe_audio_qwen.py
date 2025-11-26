@@ -3,16 +3,31 @@ load_dotenv()
 import os
 import sys
 import dashscope
+from pydub import AudioSegment
 
-from utils import get_audio_file_abs_uri
+from utils.get_file_abs_uri import get_file_abs_uri
+from split_audio_file import export_segments
 
 # 以下为北京地域url，若使用新加坡地域的模型，需将url替换为：https://dashscope-intl.aliyuncs.com/api/v1
 dashscope.base_http_api_url = 'https://dashscope.aliyuncs.com/api/v1'
 
-def transcribe_audio(input_file, output_file="temp"):
-    # 请用您的本地音频的绝对路径替换 ABSOLUTE_PATH/welcome.mp3
+MAX_AUDIO_LENGTH_MS = 60_000  # 1 minutes in milliseconds
 
-    audio_file_path = get_audio_file_abs_uri(input_file)
+def split_and_transcribe(input_file, output_file="temp"):
+    audio = AudioSegment.from_file(input_file)
+    
+    if len(audio) > MAX_AUDIO_LENGTH_MS:
+        parts = (len(audio) + MAX_AUDIO_LENGTH_MS - 1) // MAX_AUDIO_LENGTH_MS
+        # Split audio and transcribe each chunk
+        chunks = export_segments(input_file, parts)
+        for chunk in chunks:
+            transcribe_audio(chunk, output_file)
+    else:
+        # Audio is short enough, transcribe directly
+        transcribe_audio(input_file, output_file)
+
+def transcribe_audio(input_file, output_file="temp"):
+    audio_file_path = get_file_abs_uri(input_file)
 
     messages = [
         {
@@ -65,7 +80,7 @@ def main():
     input_file = sys.argv[1]
     output_file = sys.argv[2]
 
-    if not transcribe_audio(input_file, output_file):
+    if not split_and_transcribe(input_file, output_file):
        sys.exit(1)
 
 if __name__ == "__main__":
