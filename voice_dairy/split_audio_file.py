@@ -1,6 +1,4 @@
 import argparse
-import math
-import os
 import sys
 from pathlib import Path
 from pydub import AudioSegment
@@ -26,7 +24,7 @@ def find_silent_cut_positions(audio, parts, min_silence_len=700, silence_thresh_
 
         # detect silence intervals [(start_ms, end_ms), ...]
         silence_thresh = audio.dBFS - silence_thresh_delta
-        silences = detect_silence(audio, min_silence_len=min_silence_len, silence_thresh=silence_thresh)
+        silences = detect_silence(audio, min_silence_len=min_silence_len, silence_thresh=silence_thresh, seek_step=100)
         # normalize silence intervals
         silences = [(max(0, s), min(total_ms, e)) for s, e in silences]
 
@@ -76,8 +74,35 @@ def export_segments(audio, cuts, src_path, out_dir):
                 out_paths.append(out_path.as_posix())
         return out_paths
 
+def cut_audio(audio_path, parts, min_silence_ms=700, silence_delta_db=16, search_radius_ms=5000):
+                src = Path(audio_path)
+                if not src.exists() or not src.is_file():
+                        print("Error: audio file not found.", file=sys.stderr)
+                        sys.exit(2)
+                if parts <= 0:
+                        print("Error: parts must be a positive integer.", file=sys.stderr)
+                        sys.exit(2)
+
+                try:
+                        audio = AudioSegment.from_file(src.as_posix())
+                except Exception as e:
+                        print(f"Error loading audio: {e}", file=sys.stderr)
+                        sys.exit(3)
+
+                cuts = find_silent_cut_positions(
+                        audio,
+                        parts=parts,
+                        min_silence_len=min_silence_ms,
+                        silence_thresh_delta=silence_delta_db,
+                        search_radius_ms=search_radius_ms,
+                )
+
+                out_dir = src.parent
+                out_paths = export_segments(audio, cuts, src.as_posix(), out_dir)
+                return out_paths
 
 def main():
+        parser = argparse.ArgumentParser(description="Split an audio file into X parts, preferring silent cuts.")
         parser = argparse.ArgumentParser(description="Split an audio file into X parts, preferring silent cuts.")
         parser.add_argument("audio", help="Path to audio file (wav, mp3, etc.)")
         parser.add_argument("parts", type=int, help="Number of parts to split into (integer > 0)")
@@ -85,31 +110,14 @@ def main():
         parser.add_argument("--silence-delta-db", type=int, default=16, help="Silence threshold = audio.dBFS - delta_db")
         parser.add_argument("--search-radius-ms", type=int, default=5000, help="Search radius around target cut (ms)")
         args = parser.parse_args()
-
-        src = Path(args.audio)
-        if not src.exists() or not src.is_file():
-                print("Error: audio file not found.", file=sys.stderr)
-                sys.exit(2)
-        if args.parts <= 0:
-                print("Error: parts must be a positive integer.", file=sys.stderr)
-                sys.exit(2)
-
-        try:
-                audio = AudioSegment.from_file(src.as_posix())
-        except Exception as e:
-                print(f"Error loading audio: {e}", file=sys.stderr)
-                sys.exit(3)
-
-        cuts = find_silent_cut_positions(
-                audio,
-                parts=args.parts,
-                min_silence_len=args.min_silence_ms,
-                silence_thresh_delta=args.silence_delta_db,
-                search_radius_ms=args.search_radius_ms,
+        
+        out_paths = cut_audio(
+                args.audio,
+                args.parts,
+                args.min_silence_ms,
+                args.silence_delta_db,
+                args.search_radius_ms,
         )
-
-        out_dir = src.parent
-        out_paths = export_segments(audio, cuts, src.as_posix(), out_dir.as_posix())
 
         # print output filenames (one per line)
         for p in out_paths:
