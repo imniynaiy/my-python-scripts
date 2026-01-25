@@ -1,3 +1,4 @@
+import re
 import sqlite3
 import sys
 
@@ -34,6 +35,19 @@ def main():
         parts.append("-" * 40)
     output_str = "\n".join(parts)
     print(output_str)
+
+    # Get the id of the newest post where category_id = 2, write it back to this file
+    cursor.execute(
+        "select id from post where id in (select post_id from post_category where category_id = 2) order by id desc limit 1"
+    )
+    newest_id = cursor.fetchone()
+    if newest_id:
+        new_last_line = f"# Last id: {newest_id[0]}"
+        with open(__file__, 'r') as f:
+            content = f.read()
+        content = re.sub(r'# Last id: \d+', new_last_line, content)
+        with open(__file__, 'w') as f:
+            f.write(content)
     
     conn.close()
 
@@ -41,4 +55,4 @@ if __name__ == "__main__":
     main()
 
 
-# Last id: 35
+# Last id: 126
