@@ -1,0 +1,1 @@
+select id,title, original_content from post where id in (select post_id from post_category where category_id = 2) and id > 0;
