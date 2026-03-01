@@ -21,7 +21,7 @@ def main():
     
     # Query using the provided SQL, use diary_id instead of 0 (parameterized)
     cursor.execute(
-        "select title, original_content from post where id in (select post_id from post_category where category_id = 2) and id > ?",
+        "select title, content from articles where category_id = '90960d95-8e34-4fd3-8419-78a051d5b526' and id > ?",
         (diary_id,)
     )
     
@@ -38,7 +38,7 @@ def main():
 
     # Get the id of the newest post where category_id = 2, write it back to this file
     cursor.execute(
-        "select id from post where id in (select post_id from post_category where category_id = 2) order by id desc limit 1"
+        "select id from articles where category_id = '90960d95-8e34-4fd3-8419-78a051d5b526' order by id desc limit 1"
     )
     newest_id = cursor.fetchone()
     if newest_id:
@@ -55,4 +55,4 @@ if __name__ == "__main__":
     main()
 
 
-# Last id: 126
+# Last id: 173
